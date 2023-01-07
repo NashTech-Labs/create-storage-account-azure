@@ -19,11 +19,21 @@ read sku_storage_account
 
 echo "\nCreating Storage Account"
 
-result=$(az storage account create \
-    --resource-group $rg_name \
-    --name $storage_account_name \
-    --location $location \
-    --sku $sku_storage_account)
+valid_name = $(az storage account check-name \
+    --name $storage_account_name
+    --query nameAvailable \
+    --output tsv)
+
+if [ valid_name ]
+then
+    result=$(az storage account create \
+        --resource-group $rg_name \
+        --name $storage_account_name \
+        --location $location \
+        --sku $sku_storage_account)
+else
+    echo "\nEntered Name not available"
+fi
 
 status=$?
 
